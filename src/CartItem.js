@@ -10,42 +10,88 @@ class CartItem extends React.Component {
       img: ''
     }
     // this.increaseQuantity = this.increaseQuantity.bind(this);
+    // this.testing();
   }
 
-  increaseQuantity = () => {
-    // // this.state.qty += 1;
-    // // console.log('this', this.state);
+  // testing () {
+  //   const promise = new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       resolve('done');
+  //     }, 5000);
+  //   })
 
-    // // setState form 1
-    // // re-render the component with updated value by calling setState
+  //   promise.then(() => {
+  //     // setState acts like a synchronus call
+  //     this.setState({ qty: this.state.qty + 10 });
+
+  //     this.setState({ qty: this.state.qty + 10 });
+
+  //     this.setState({ qty: this.state.qty + 10 });
+
+  //     console.log('state', this.state);
+  //   });
+  // }
+  increaseQuantity = () => {
+    // this.state.qty += 1;
+    // console.log('this', this.state);
+    // setState form 1
     // this.setState({
-    //   qty: this.state.qty + 1 
-    // });
+    //   qty: this.state.qty + 1
+    // }, () => {});
+
+    // this.setState({
+    //   qty: this.state.qty + 1
+    // }, () => {});
     
-   
-    // setState form 2 -> if prevState is required, used this
-    this.setState((prevState)=>{
+    // // still using the optional Callback, qty is getting increased by 5 only and the rendering will happend only once.
+    // this.setState({
+    //   qty: this.state.qty + 5
+    // }, () => {});
+
+    // setState form 2 - if prevState required use this
+    this.setState((prevState) => {
       return {
-        qty : prevState.qty + 1
+        qty: prevState.qty + 1
       }
-    }, () => {
-       console.log('this.state', this.state);
-    })
+    });
+
+    
+    // Note - In the setState form2 , while using the optional Callback, we will get the upadted quaintity
+  //   this.setState(
+  //     prevState => {
+  //         return {
+  //             number: prevState.number + 2
+  //         };
+  //     },
+  //     () => {
+  //         console.log(this.state.number);
+  //     }
+  // );
+
+  // this.setState(
+  //     prevState => {
+  //         return {
+  //             number: prevState.number + 3
+  //         };
+  //     },
+  //     () => {
+  //         console.log(this.state.number);
+  //     }
+  // );
   }
 
   decreaseQuantity = () => {
-   
-   // setState form 2 -> if prevState is required, used this
-    this.setState((prevState)=>{
-      const { qty } = this.state;
+    const { qty } = this.state;
 
-      if(qty === 0){
-        return;
-      }
+    if (qty === 0) {
+      return;
+    }
+    // setState form 2 - if prevState required use this
+    this.setState((prevState) => {
       return {
-        qty : prevState.qty - 1
+        qty: prevState.qty - 1
       }
-    })
+    });
   }
   render () {
     console.log('render');
@@ -64,14 +110,14 @@ class CartItem extends React.Component {
             <img
               alt="increase"
               className="action-icons"
-              src="https://as2.ftcdn.net/v2/jpg/01/26/10/59/1000_F_126105961_6vHCTRX2cPOnQTBvx9OSAwRUapYTEmYA.jpg"
+              src="https://as2.ftcdn.net/v2/jpg/01/26/10/59/1000_F_126105961_6vHCTRX2cPOnQTBvx9OSAwRUapYTEmYA.jpg" 
               onClick={this.increaseQuantity}
             />
             <img
               alt="decrease"
               className="action-icons"
-              src="https://as1.ftcdn.net/v2/jpg/03/73/49/86/1000_F_373498649_nBxauQ0ipBSVrVcMpWWVmTpXu3BLvRyY.jpg"
-              onClick={this.decreaseQuantity} 
+              src="https://as1.ftcdn.net/v2/jpg/03/73/49/86/1000_F_373498649_nBxauQ0ipBSVrVcMpWWVmTpXu3BLvRyY.jpg" 
+              onClick={this.decreaseQuantity}
             />
             <img
               alt="delete"
