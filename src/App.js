@@ -103,12 +103,30 @@ class  App extends React.Component{
        return cartTotal;
     }
 
+    addProduct = (product) =>{
+      firestore
+      .collection("products")
+      .add({
+        img : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOf58ksmvCsF7bidJ8IGuUc_pLnuwXW6w3EBIu9wYK0w&s',
+        price : 900,
+        qty : 3,
+        title : 'washing machine',
+      })
+      .then((docRef) => {
+        console.log('Product has been added', docRef);
+      })
+      .catch((error) => {
+        console.log('Error :', error);
+      })
+    }
+
     render (){
       const {products, loading} = this.state;
       return (
         <div className="App">
         {/* <h1> Cart </h1> */}
         <Navbar count={this.getCartCount()}/>
+        <button onClick={this.addProduct} style={{padding: 20, fontSize: 20}}>Add a Product</button>
         <Cart
             products={products}
             onIncreaseQuantity = {this.handleIncreaseQuantity}
