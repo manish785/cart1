@@ -51,10 +51,21 @@ class  App extends React.Component{
       const {products} = this.state;
       const index = products.indexOf(product);
 
-      products[index].qty += 1;
+      // products[index].qty += 1;
 
-      this.setState({
-          products
+      // this.setState({
+      //     products
+      // })
+
+      const docRef =  firestore.collection("products").doc(products[index].id);
+      docRef.update({
+        qty: products[index].qty + 1
+      })
+      .then(() => {
+        console.log('Updated Successfully');
+      })
+      .catch((error) => {
+        console.log('Error :', error);
       })
     }
 
@@ -66,18 +77,34 @@ class  App extends React.Component{
       if(products[index].qty === 0){
           return;
       }
-      products[index].qty -= 1;
-      this.setState({
-          products
+
+      const docRef =  firestore.collection("products").doc(products[index].id);
+      docRef.update({
+        qty: products[index].qty - 1
+      })
+      .then(() => {
+        console.log('Updated Successfully');
+      })
+      .catch((error) => {
+        console.log('Error :', error);
       })
     }
 
     handleDeleteProduct = (id) =>{
       const {products} = this.state;
 
-      const items = products.filter((item)=> item.id !== id );
-      this.setState({
-          products :items
+      // const items = products.filter((item)=> item.id !== id );
+      // this.setState({
+      //     products :items
+      // })
+
+      const docRef =  firestore.collection("products").doc(id);
+      docRef.delete()
+      .then(() => {
+        console.log('Deleted Successfully');
+      })
+      .catch((error) => {
+        console.log('Error :', error);
       })
     }
     
@@ -126,7 +153,7 @@ class  App extends React.Component{
         <div className="App">
         {/* <h1> Cart </h1> */}
         <Navbar count={this.getCartCount()}/>
-        <button onClick={this.addProduct} style={{padding: 20, fontSize: 20}}>Add a Product</button>
+        {/* <button onClick={this.addProduct} style={{padding: 20, fontSize: 20}}>Add a Product</button> */}
         <Cart
             products={products}
             onIncreaseQuantity = {this.handleIncreaseQuantity}
