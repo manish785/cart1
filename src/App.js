@@ -1,6 +1,8 @@
 import React from 'react';
 import Cart from './Cart';
 import Navbar from './Navbar';
+import { firestore } from './firebase';
+
 
 
 class  App extends React.Component{
@@ -8,58 +10,53 @@ class  App extends React.Component{
       constructor () {
         super();
         this.state = {
-        products: [
-            {
-                price: 999,
-                title: 'Phone',
-                qty: 1,
-                img: 'https://media.istockphoto.com/id/496730484/photo/apple-watch-sport-42mm-silver-aluminum-case-with-white-band.jpg?s=612x612&w=0&k=20&c=RY2MGp4S-OVqAZm1ZCUDhM6KSmfAJ02RU51l4mJa2EA=',
-                id: 1
-            },
-            {
-                price: 999,
-                title: 'Watch',
-                qty: 1,
-                img: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-14-pro-max-1.jpg',
-                id: 2
-            },
-            {
-                price: 999,
-                title: 'EarPods',
-                qty: 1,
-                img: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG1hY2Jvb2slMjBwcm98ZW58MHx8MHx8fDA%3D&w=1000&q=80',
-                id: 3
-            }
-        ]
+        products: [],
+        loading: true
         }
         // this.increaseQuantity = this.increaseQuantity.bind(this);
         // this.testing();
       }
 
+    componentDidMount() {
+    
+      firestore
+      .collection("products")
+      .get()
+      .then(snapshot => {
+        const products = snapshot.docs.map(doc => {
+          const data = doc.data();
+          data["id"] = doc.id;
+          return data;
+        });
+        this.setState({ products: products, loading: false });
+      });
+    }
+    
+
     handleIncreaseQuantity = (product) =>{
-        // console.log('Hey, Please inc the quantity of the product', product);
-        const {products} = this.state;
-        const index = products.indexOf(product);
+      // console.log('Hey, Please inc the quantity of the product', product);
+      const {products} = this.state;
+      const index = products.indexOf(product);
 
-        products[index].qty += 1;
+      products[index].qty += 1;
 
-        this.setState({
-            products
-        })
+      this.setState({
+          products
+      })
     }
 
     handleDecreaseQuantity = (product) =>{
         // console.log('Hey, Please inc the quantity of the product', product);
-        const {products} = this.state;
-        const index = products.indexOf(product);
-        
-        if(products[index].qty === 0){
-            return;
-        }
-        products[index].qty -= 1;
-        this.setState({
-            products
-        })
+      const {products} = this.state;
+      const index = products.indexOf(product);
+      
+      if(products[index].qty === 0){
+          return;
+      }
+      products[index].qty -= 1;
+      this.setState({
+          products
+      })
     }
 
     handleDeleteProduct = (id) =>{
@@ -94,7 +91,7 @@ class  App extends React.Component{
     }
 
     render (){
-      const {products} = this.state;
+      const {products, loading} = this.state;
       return (
         <div className="App">
         {/* <h1> Cart </h1> */}
@@ -105,6 +102,7 @@ class  App extends React.Component{
             onDecreaseQuantity = {this.handleDecreaseQuantity}
             onDeleteProduct = {this.handleDeleteProduct}
         />
+        {loading && <h1>Loading Products</h1>}
         <div style = {{padding : 10 , fontSize: 20}}>Total : {this.getCartTotal()}</div>
         </div>
       );
