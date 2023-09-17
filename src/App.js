@@ -2,60 +2,38 @@ import React from 'react';
 import Cart from './Cart';
 import Navbar from './Navbar';
 import { firestore } from './firebase';
+import {useState, useEffect} from 'react';
 
 
 
-class  App extends React.Component{
+function App() {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-      constructor () {
-        super();
-        this.state = {
-        products: [],
-        loading: true
-        }
-        // this.increaseQuantity = this.increaseQuantity.bind(this);
-        // this.testing();
-      }
 
-    componentDidMount() {
-    
-    //   firestore
-    //   .collection("products")
-    //   .get()
-    //   .then(snapshot => {
-    //     const products = snapshot.docs.map(doc => {
-    //       const data = doc.data();
-    //       data["id"] = doc.id;
-    //       return data;
-    //     });
-    //     this.setState({ products: products, loading: false });
-    //   });
-    // }
+    useEffect(()=> {
+      const unsubscribe =  firestore
+          .collection("products")
+          .onSnapshot((snapshot => {
+            const productsData = snapshot.docs.map(doc => {
+              const data = doc.data();
+              data["id"] = doc.id;
+              return data;
+            });
 
-      firestore
-      .collection("products")
-      .onSnapshot((snapshot => {
-        const products = snapshot.docs.map(doc => {
-          const data = doc.data();
-          data["id"] = doc.id;
-          return data;
-        });
-        this.setState({ products: products, loading: false });
-      }))
-        
-    }
+            setProducts(productsData);
+            setLoading(false);
+
+          }))
+      
+          return ()=>{
+            unsubscribe();
+          }
+    }, [])
     
 
-    handleIncreaseQuantity = (product) =>{
-      // console.log('Hey, Please inc the quantity of the product', product);
-      const {products} = this.state;
+    const handleIncreaseQuantity = (product) =>{
       const index = products.indexOf(product);
-
-      // products[index].qty += 1;
-
-      // this.setState({
-      //     products
-      // })
 
       const docRef =  firestore.collection("products").doc(products[index].id);
       docRef.update({
@@ -63,15 +41,15 @@ class  App extends React.Component{
       })
       .then(() => {
         console.log('Updated Successfully');
+        return;
       })
       .catch((error) => {
         console.log('Error :', error);
+        return;
       })
     }
 
-    handleDecreaseQuantity = (product) =>{
-        // console.log('Hey, Please inc the quantity of the product', product);
-      const {products} = this.state;
+    const handleDecreaseQuantity = (product) =>{
       const index = products.indexOf(product);
       
       if(products[index].qty === 0){
@@ -84,32 +62,28 @@ class  App extends React.Component{
       })
       .then(() => {
         console.log('Updated Successfully');
+        return;
       })
       .catch((error) => {
         console.log('Error :', error);
+        return;
       })
     }
 
-    handleDeleteProduct = (id) =>{
-      const {products} = this.state;
-
-      // const items = products.filter((item)=> item.id !== id );
-      // this.setState({
-      //     products :items
-      // })
-
+    const handleDeleteProduct = (id) =>{
       const docRef =  firestore.collection("products").doc(id);
       docRef.delete()
       .then(() => {
         console.log('Deleted Successfully');
+        return;
       })
       .catch((error) => {
         console.log('Error :', error);
+        return;
       })
     }
     
-    getCartCount = () =>{
-      const {products} = this.state;
+    const getCartCount = () =>{
       let count = 0;
  
       products.forEach((product) =>{
@@ -118,9 +92,7 @@ class  App extends React.Component{
       return count;
     }
 
-    getCartTotal = () =>{
-       const {products} = this.state;
-
+    const getCartTotal = () =>{
        let cartTotal =0;
 
        products.map((product) =>{
@@ -130,41 +102,41 @@ class  App extends React.Component{
        return cartTotal;
     }
 
-    addProduct = (product) =>{
-      firestore
-      .collection("products")
-      .add({
-        img : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOf58ksmvCsF7bidJ8IGuUc_pLnuwXW6w3EBIu9wYK0w&s',
-        price : 900,
-        qty : 3,
-        title : 'washing machine',
-      })
-      .then((docRef) => {
-        console.log('Product has been added', docRef);
-      })
-      .catch((error) => {
-        console.log('Error :', error);
-      })
-    }
+    // addProduct = (product) =>{
+    //   firestore
+    //   .collection("products")
+    //   .add({
+    //     img : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOf58ksmvCsF7bidJ8IGuUc_pLnuwXW6w3EBIu9wYK0w&s',
+    //     price : 900,
+    //     qty : 3,
+    //     title : 'washing machine',
+    //   })
+    //   .then((docRef) => {
+    //     console.log('Product has been added', docRef);
+    //   })
+    //   .catch((error) => {
+    //     console.log('Error :', error);
+    //   })
+    // }
 
-    render (){
-      const {products, loading} = this.state;
-      return (
-        <div className="App">
-        {/* <h1> Cart </h1> */}
-        <Navbar count={this.getCartCount()}/>
-        {/* <button onClick={this.addProduct} style={{padding: 20, fontSize: 20}}>Add a Product</button> */}
-        <Cart
-            products={products}
-            onIncreaseQuantity = {this.handleIncreaseQuantity}
-            onDecreaseQuantity = {this.handleDecreaseQuantity}
-            onDeleteProduct = {this.handleDeleteProduct}
-        />
-        {loading && <h1>Loading Products</h1>}
-        <div style = {{padding : 10 , fontSize: 20}}>Total : {this.getCartTotal()}</div>
-        </div>
-      );
-    }
-}
+
+
+    return (
+      <div className="App">
+      {/* <h1> Cart </h1> */}
+      <Navbar count={getCartCount()}/>
+      {/* <button onClick={this.addProduct} style={{padding: 20, fontSize: 20}}>Add a Product</button> */}
+      <Cart
+          products={products}
+          onIncreaseQuantity = {handleIncreaseQuantity}
+          onDecreaseQuantity = {handleDecreaseQuantity}
+          onDeleteProduct = {handleDeleteProduct}
+      />
+      {loading && <h1>Loading Products</h1>}
+      <div style = {{padding : 10 , fontSize: 20}}>Total : {getCartTotal()}</div>
+      </div>
+    );
+  }
+
 
 export default App;

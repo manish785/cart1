@@ -47,8 +47,8 @@ const CartItem = (props) => {
 
 const styles = {
   image: {
-    height: 110,
-    width: 110,
+    height: 400,
+    width: 800,
     borderRadius: 4,
     background: '#ccc'
   }
